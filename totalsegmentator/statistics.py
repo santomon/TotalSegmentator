@@ -1,3 +1,4 @@
+import os.path
 import pathlib
 from pathlib import Path
 import json
@@ -99,7 +100,12 @@ def get_basic_statistics(seg: np.array, ct_file, file_out: Path, quiet: bool = F
     ct = ct_img.get_fdata().astype(np.int16)
     spacing = ct_img.header.get_zooms()
     vox_vol = spacing[0] * spacing[1] * spacing[2]
-    stats = {}
+
+    if os.path.isfile(file_out):
+        with open(file_out, "r") as f:
+            stats = json.load(f)
+    else:
+        stats = {}
     for k, mask_name in tqdm(class_map[task].items(), disable=quiet):
         stats[mask_name] = {}
         # data = nib.load(mask).get_fdata()  # loading: 0.6s
